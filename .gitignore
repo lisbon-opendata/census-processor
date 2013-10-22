@@ -1,0 +1,3 @@
+# Ignore any data file that might be left in the data folder
+
+data/Q605_*
