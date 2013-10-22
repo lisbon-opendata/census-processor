@@ -121,7 +121,7 @@ for sheet in ${sheets[*]}
 do
 	#For every sheet, a python script is called that transposes the data and adds it to the final file
 	python nationalities_transpose.py $output_file $sheet.csv
-	rm $sheet.tmp
+	rm $sheet.csv
 done
 
 elapsed_time=$(($SECONDS - $start_time))
