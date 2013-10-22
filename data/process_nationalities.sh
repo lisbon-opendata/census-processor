@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash --posix
 
 # Script for the Views on Lisbon project, processing
 
