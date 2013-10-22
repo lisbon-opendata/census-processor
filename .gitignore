@@ -1,3 +1,4 @@
-# Ignore any data file that might be left in the data folder
+# Ignore any temporary data file that might be left in the data folder
 
-data/Q605_*
+data/Q605*.csv
+data/Q605*.xlsx
