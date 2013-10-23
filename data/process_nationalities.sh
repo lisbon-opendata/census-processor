@@ -144,7 +144,6 @@ for sheet in ${sheets[*]}
 do
 	echo "Starting $sheet"
 	#in2csv on the sheet that matters
-	#~ $cmd_in2csv --sheet $sheet -f xlsx $base_file_name.xlsx > $sheet.csv
 	$cmd_in2csv --sheet $sheet -f xlsx $base_file_name.xlsx > $sheet.csv
 	elapsed_time=$(($SECONDS - $start_time))
 	echo "$elapsed_time seconds. done"
