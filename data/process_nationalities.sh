@@ -60,6 +60,10 @@ done
 [[ $var_url != "" ]] || { usage; exit 1;}
 [[ $var_output != "" ]] || { usage; exit 1;}
 
+# check that nationalities_transpose.py is available
+typeset -r cmd_transpose_nationalities="nationalities_transpose.py"
+[[ -f $cmd_transpose_nationalities ]] || error "This script needs $cmd_transpose_nationalities"
+
 # The folder should not contain the final file already
 [[ ! -f $var_output ]] || error "It seems you already have a $var_output in this folder. Remove it and run this script again."
 
@@ -174,7 +178,7 @@ echo 'id,"Total HM", "Total H", "Portugal HM", "Portugal H", "Estrangeira HM", "
 for sheet in ${sheets[*]}
 do
 	#For every sheet, a python script is called that transposes the data and adds it to the final file
-	$cmd_python nationalities_transpose.py $var_output $sheet.csv || error "$cmd_python nationalities_transpose.py $var_output $sheet.csv"
+	$cmd_python $cmd_transpose_nationalities $var_output $sheet.csv || error "$cmd_python $cmd_transpose_nationalities $var_output $sheet.csv"
 	rm $sheet.csv || error "rm $sheet.csv"
 done
 
