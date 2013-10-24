@@ -140,7 +140,7 @@ else
 fi
 
 elapsed_time=$(($SECONDS - $start_time))
-echo "$elapsed_time seconds. Converting the relevant sheets of the Excel file to CSV format \(this will take a while\)..."
+echo "$elapsed_time seconds. Converting the relevant sheets of the Excel file to CSV format (this will take a while)..."
 
 #Convert each relevant sheet in the Excel file to its own CSV file
 # //TEMP add multiprocessing 
