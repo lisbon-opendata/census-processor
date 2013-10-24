@@ -25,21 +25,21 @@ error()
 usage()
 {
 	cat >&2 <<-EOF
-		Usage : $0: -u http://www.ine.pt/investigadores/Quadros/Q605.zip -o nationalities_portugal.csv
-			-u source URL
+		Usage : $0 -i 605 -o nationalities_portugal.csv
+			-i indicator
 			-o output file
 			-h help
 	EOF
 }
 
-typeset var_url=""
+typeset var_indicator=""
 typeset var_output=""
 
-while getopts "u:o:h" option
+while getopts "i:o:h" option
 do
 	case $option in
-	u)
-		var_url="$OPTARG"
+	i)
+		var_indicator="$OPTARG"
 		;;
 	o)
 		var_output="$OPTARG"
@@ -57,22 +57,24 @@ done
 
 # check that args not empty
 # //TEMP we could make better checks
-[[ $var_url != "" ]] || { usage; exit 1;}
+[[ $var_indicator != "" ]] || { usage; exit 1;}
 [[ $var_output != "" ]] || { usage; exit 1;}
 
-# check that nationalities_transpose.py is available
-typeset -r cmd_transpose_nationalities="nationalities_transpose.py"
-[[ -f $cmd_transpose_nationalities ]] || error "This script needs $cmd_transpose_nationalities"
+# check that transpose_table.py is available
+typeset -r cmd_transpose_table="transpose_table.py"
+[[ -f $cmd_transpose_table ]] || error "This script needs $cmd_transpose_table"
 
 # The folder should not contain the final file already
 [[ ! -f $var_output ]] || error "It seems you already have a $var_output in this folder. Remove it and run this script again."
 
+# constructing the URL based on the indicator
+typeset -r base_url=http://www.ine.pt/investigadores/Quadros/Q${var_indicator}.zip
 # getting base file name from URL (//TEMP see if it is not better to put it on argument)
-typeset -r base_zip_file_name=${var_url##*/}
+typeset -r base_zip_file_name=Q${var_indicator}.zip
 typeset -r base_file_name=${base_zip_file_name%%.*}
 
 #The sheets in the Excel that need to be processed
-typeset -r sheets=(Q605_NORTE Q605_CENTRO Q605_LISBOA Q605_ALENTEJO Q605_ALGARVE Q605_ACORES Q605_MADEIRA)
+typeset -r sheets=(Q${var_indicator}_NORTE Q${var_indicator}_CENTRO Q${var_indicator}_LISBOA Q${var_indicator}_ALENTEJO Q${var_indicator}_ALGARVE Q${var_indicator}_ACORES Q${var_indicator}_MADEIRA)
 
 #Change Internal Field Separator to new line. Otherwise, it will think spaces in filenames are field separators
 typeset -r IFS=$'\n'
@@ -109,7 +111,7 @@ done
 download_and_unzip()
 {
 	echo "Downloading and unzipping the file..."
-	$cmd_wget "$var_url" || error "$cmd_wget "$var_url""
+	$cmd_wget "$base_url" || error "$cmd_wget "$base_url""
 	$cmd_unzip -q $base_file_name.zip || error "$cmd_unzip -q $base_file_name.zip"
 	# //TEMP see if not better to put a clean option
 	# (if for test we do not want to download everytime the archive)
@@ -174,11 +176,12 @@ echo "$elapsed_time seconds. About to transpose the data and add it to the final
 
 #Create the file with the final data
 touch $var_output || error "touch $var_output"
+# // TODO, make it more generic. Parse the column and build the structure automatically.
 echo 'id,"Total HM", "Total H", "Portugal HM", "Portugal H", "Estrangeira HM", "Estrangeira H", "Europa HM", "Europa H", "União Europeia 27 (S/PT) HM", "União Europeia 27 (S/PT) H", "França HM", "França H", "Países Baixos (Holanda) HM", "Países Baixos (Holanda) H", "Alemanha HM", "Alemanha H", "Itália HM", "Itália H", "Reino Unido HM", "Reino Unido H", "Irlanda HM", "Irlanda H", "Dinamarca HM", "Dinamarca H", "Grécia HM", "Grécia H", "Espanha HM", "Espanha H", "Bélgica HM", "Bélgica H", "Luxemburgo HM", "Luxemburgo H", "Suécia HM", "Suécia H", "Finlândia HM", "Finlândia H", "Áustria HM", "Áustria H", "Malta HM", "Malta H", "Estónia HM", "Estónia H", "Letónia HM", "Letónia H", "Lituânia HM", "Lituânia H", "Polónia HM", "Polónia H", "República Checa HM", "República Checa H", "Eslováquia HM", "Eslováquia H", "Hungria HM", "Hungria H", "Roménia HM", "Roménia H", "Bulgária HM", "Bulgária H", "Eslovénia HM", "Eslovénia H", "Chipre HM", "Chipre H", "Outros países (parcial) HM", "Outros países (parcial) H", "Noruega HM", "Noruega H", "Suíça HM", "Suíça H", "Rússia (Federação da) HM", "Rússia (Federação da) H", "Outros países - Europa HM", "Outros países - Europa H", "África HM", "África H", "África do Sul HM", "África do Sul H", "Angola HM", "Angola H", "Cabo Verde HM", "Cabo Verde H", "Guiné-Bissau HM", "Guiné-Bissau H", "Moçambique HM", "Moçambique H", "São Tomé e Príncipe HM", "São Tomé e Príncipe H", "Outros países - África HM", "Outros países - África H", "América HM", "América H", "Argentina HM", "Argentina H", "Brasil HM", "Brasil H", "Canadá HM", "Canadá H", "Estados Unidos da América HM", "Estados Unidos da América H", "Venezuela, República Bolivariana da HM", "Venezuela, República Bolivariana da H", "Outros país - América HM", "Outros país - América H", "Ásia HM", "Ásia H", "China HM", "China H", "Índia HM", "Índia H", "Japão HM", "Japão H", "Macau HM", "Macau H", "Paquistão HM", "Paquistão H", "Timor Leste HM", "Timor Leste H", "Outros países - Ásia HM", "Outros países - Ásia H", "Oceânia HM", "Oceânia H", "Austrália HM", "Austrália H", "Outros países da Oceânia HM", "Outros países da Oceânia H", "Outros países HM", "Outros países H", "Dupla nacionalidade HM", "Dupla nacionalidade H", "Dupla nacionalidade portuguesa e outra HM", "Dupla nacionalidade portuguesa e outra H", "Dupla nacionalidade estrangeira HM", "Dupla nacionalidade estrangeira H", "Dupla nacionalidade estrangeira, sendo uma da União Europeia HM", "Dupla nacionalidade estrangeira, sendo uma da União Europeia H", "Dupla nacionalidade estrangeira, nenhuma da União Europeia HM", "Dupla nacionalidade estrangeira, nenhuma da União Europeia H", "Apátrida HM", "Apátrida H"' > $var_output
 for sheet in ${sheets[*]}
 do
 	#For every sheet, a python script is called that transposes the data and adds it to the final file
-	$cmd_python $cmd_transpose_nationalities $var_output $sheet.csv || error "$cmd_python $cmd_transpose_nationalities $var_output $sheet.csv"
+	$cmd_python $cmd_transpose_table $var_output $sheet.csv || error "$cmd_python $cmd_transpose_table $var_output $sheet.csv"
 	rm $sheet.csv || error "rm $sheet.csv"
 done
 
