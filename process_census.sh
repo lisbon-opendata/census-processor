@@ -175,14 +175,13 @@ do
 	mv $sheet-tmp.csv $sheet.csv || error "mv $sheet-tmp.csv $sheet.csv"
 done
 
-
 #Create the file with the final data
 touch $var_output || error "touch $var_output"
 
 elapsed_time=$(($SECONDS - $start_time))
 echo "$elapsed_time seconds. Building the header of the CSV..."
 
-#Build the header of the CSV
+#Build the header of the CSV based on the first sheet in the sheets array
 $cmd_python $cmd_generate_header $var_output $sheets.csv || error "$cmd_python $cmd_generate_header $var_output $sheets.csv"
 
 elapsed_time=$(($SECONDS - $start_time))
