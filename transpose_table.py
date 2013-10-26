@@ -12,19 +12,20 @@ with open(sys.argv[2], 'rb') as ifile:
     admin_area_id = 0
     for row in reader:
 
-    	# If the ID of the administrative area = the same as the previous
-        if (admin_area_id) == (row[1]):
-        	# we write the data to the CSV
-        	f.write(',' + row[3])
-        # Else, we're dealing with a new administrative area that needs to go 
-        # to a new line
-        else:
-            # Except for the very first admin area, a new line is needed
+    	# If the ID of the administrative area is different from the previous
+        # we're dealing with a new area
+        if (admin_area_id) != int(row[2]):
+            # Head of the CSV contains line-ending already, so on first admin
+            # area we don't add it.
             if (admin_area_id) != 0:
                 f.write('\n')
-            # Add the ID and add the first bit of data
-        	f.write(row[1] + ',' + row[3])
-            admin_area_id = row[1]   
+            admin_area_id = int(row[2])
+            # Add the ID and the first bit of data
+            f.write(row[2] + ',' + row[4])
+        # Else, we're dealing with the same administrative area
+        else:
+            # we write the data to the same line
+            f.write(',' + row[4])
 
 # Done. Close the file.
 f.close()

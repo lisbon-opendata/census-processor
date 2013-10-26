@@ -64,6 +64,10 @@ done
 typeset -r cmd_transpose_table="transpose_table.py"
 [[ -f $cmd_transpose_table ]] || error "This script needs $cmd_transpose_table"
 
+# check that transpose_table.py is available
+typeset -r cmd_generate_header="generate_header.py"
+[[ -f $cmd_generate_header ]] || error "This script needs $cmd_generate_header"
+
 # The folder should not contain the final file already
 [[ ! -f $var_output ]] || error "It seems you already have a $var_output in this folder. Remove it and run this script again."
 
@@ -163,7 +167,7 @@ for sheet in ${sheets[*]}
 do
 	#csvcut removes the columns with age-specific data. We only need the totals per administrative area
 	#csvgrep removes all the rows that are not related to a freguesia (Identified by a 6 in column 2)
-	$cmd_csvcut -c 2,3,4,5 $sheet.csv | csvgrep -c 1 -m "6" > $sheet-tmp.csv
+	$cmd_csvcut -c 1,2,3,4,5 $sheet.csv | csvgrep -c 2 -m "6" > $sheet-tmp.csv
 	#Remove first line that's empty
 	$cmd_sed -i "1,1d" $sheet-tmp.csv
 	#Do some housekeeping by removing the tmp files.
@@ -171,13 +175,19 @@ do
 	mv $sheet-tmp.csv $sheet.csv || error "mv $sheet-tmp.csv $sheet.csv"
 done
 
-elapsed_time=$(($SECONDS - $start_time))
-echo "$elapsed_time seconds. About to transpose the data and add it to the final table..."
 
 #Create the file with the final data
 touch $var_output || error "touch $var_output"
-# // TODO, make it more generic. Parse the column and build the structure automatically.
-echo 'id,"Total HM", "Total H", "Portugal HM", "Portugal H", "Estrangeira HM", "Estrangeira H", "Europa HM", "Europa H", "União Europeia 27 (S/PT) HM", "União Europeia 27 (S/PT) H", "França HM", "França H", "Países Baixos (Holanda) HM", "Países Baixos (Holanda) H", "Alemanha HM", "Alemanha H", "Itália HM", "Itália H", "Reino Unido HM", "Reino Unido H", "Irlanda HM", "Irlanda H", "Dinamarca HM", "Dinamarca H", "Grécia HM", "Grécia H", "Espanha HM", "Espanha H", "Bélgica HM", "Bélgica H", "Luxemburgo HM", "Luxemburgo H", "Suécia HM", "Suécia H", "Finlândia HM", "Finlândia H", "Áustria HM", "Áustria H", "Malta HM", "Malta H", "Estónia HM", "Estónia H", "Letónia HM", "Letónia H", "Lituânia HM", "Lituânia H", "Polónia HM", "Polónia H", "República Checa HM", "República Checa H", "Eslováquia HM", "Eslováquia H", "Hungria HM", "Hungria H", "Roménia HM", "Roménia H", "Bulgária HM", "Bulgária H", "Eslovénia HM", "Eslovénia H", "Chipre HM", "Chipre H", "Outros países (parcial) HM", "Outros países (parcial) H", "Noruega HM", "Noruega H", "Suíça HM", "Suíça H", "Rússia (Federação da) HM", "Rússia (Federação da) H", "Outros países - Europa HM", "Outros países - Europa H", "África HM", "África H", "África do Sul HM", "África do Sul H", "Angola HM", "Angola H", "Cabo Verde HM", "Cabo Verde H", "Guiné-Bissau HM", "Guiné-Bissau H", "Moçambique HM", "Moçambique H", "São Tomé e Príncipe HM", "São Tomé e Príncipe H", "Outros países - África HM", "Outros países - África H", "América HM", "América H", "Argentina HM", "Argentina H", "Brasil HM", "Brasil H", "Canadá HM", "Canadá H", "Estados Unidos da América HM", "Estados Unidos da América H", "Venezuela, República Bolivariana da HM", "Venezuela, República Bolivariana da H", "Outros país - América HM", "Outros país - América H", "Ásia HM", "Ásia H", "China HM", "China H", "Índia HM", "Índia H", "Japão HM", "Japão H", "Macau HM", "Macau H", "Paquistão HM", "Paquistão H", "Timor Leste HM", "Timor Leste H", "Outros países - Ásia HM", "Outros países - Ásia H", "Oceânia HM", "Oceânia H", "Austrália HM", "Austrália H", "Outros países da Oceânia HM", "Outros países da Oceânia H", "Outros países HM", "Outros países H", "Dupla nacionalidade HM", "Dupla nacionalidade H", "Dupla nacionalidade portuguesa e outra HM", "Dupla nacionalidade portuguesa e outra H", "Dupla nacionalidade estrangeira HM", "Dupla nacionalidade estrangeira H", "Dupla nacionalidade estrangeira, sendo uma da União Europeia HM", "Dupla nacionalidade estrangeira, sendo uma da União Europeia H", "Dupla nacionalidade estrangeira, nenhuma da União Europeia HM", "Dupla nacionalidade estrangeira, nenhuma da União Europeia H", "Apátrida HM", "Apátrida H"' > $var_output
+
+elapsed_time=$(($SECONDS - $start_time))
+echo "$elapsed_time seconds. Building the header of the CSV..."
+
+#Build the header of the CSV
+$cmd_python $cmd_generate_header $var_output $sheets.csv || error "$cmd_python $cmd_generate_header $var_output $sheets.csv"
+
+elapsed_time=$(($SECONDS - $start_time))
+echo "$elapsed_time seconds. About to transpose the data and add it to the final table..."
+
 for sheet in ${sheets[*]}
 do
 	#For every sheet, a python script is called that transposes the data and adds it to the final file
