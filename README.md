@@ -8,15 +8,13 @@ The Portuguese census data is published on the [INE website](http://censos.ine.p
 This script was initially built for the [Views on Lisbon](https://github.com/lisbon-opendata/views-on-lisbon) project, but then made more general to be able to use it with any census issue.
 
 ## Limitations
-The first version only processes totals.
+The first version only processes the totals of each indicator. Any sub-totals included in columns are not taken into account for the time being.
 
 ## Usage
 The script needs one argument to work: the question ID.
 
-```bash xxx.sh _$id_```
+```bash xxx.sh -i [3-digit number] -o [output file-name]```
 
 for example:
 
-```bash xxx.sh 605```
-
-## Requirements
+```bash xxx.sh -i 605 -i data-605.csv```

@@ -1,12 +1,14 @@
 #!/bin/bash --posix
 
-# Script for the Views on Lisbon project, processing
+# Script to process data from the Portuguese 2011 Census.
 
 # INSTRUCTIONS
-# $ bash process_nationalities.sh
+# $ bash process_census.sh -i [indicator] -o [output file]
+# Example: bash process_census.sh -i 204 -o data.csv
 
 # OUTPUT
-# A de-normalized CSV file with data about nationalities per freguesia in Portugal
+# A de-normalized CSV file with totals of the indicator per administrative
+# area.
 
 # TODO
 # Improve the source_zip + souce_file vars (not hard-coded)
