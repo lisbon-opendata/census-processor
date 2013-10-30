@@ -102,7 +102,7 @@ do
 		fi
 	else
 		typeset -r cmd_$command=$($cmd_which $command)
-		[[ -x $(eval echo \$cmd_$command) ]] || error "$cmd_$command command not found"
+		[[ -x $(eval echo \$cmd_$command) ]] || error "$command command not found"
 	fi
 done
 
